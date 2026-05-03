@@ -415,6 +415,10 @@ return;
 let result;
 if(cat.units[fu].custom){
 result=convertTemperature(fv,fu,tu);
+}else if(currentCategory==='currency'&&ratesLoaded){
+// Currency: factor = "1 USD = X units", so FROM->USD then USD->TO
+const inUsd=fv/cat.units[fu].factor;
+result=inUsd*cat.units[tu].factor;
 }else{
 result=fv*cat.units[fu].factor/cat.units[tu].factor;
 }
@@ -431,9 +435,10 @@ document.getElementById('resultLabel').textContent=fv+' '+fn+' = '+fmt+' '+tn;
 if(currentCategory==='currency'&&ratesLoaded){
 const fromCode=fu.replace('try_','TRY').toUpperCase();
 const toCode=tu.replace('try_','TRY').toUpperCase();
+const rate=cat.units[tu].factor/cat.units[fu].factor;
 ri.textContent=lang==='ru'
-?'1 '+fromCode+' = '+(1/cat.units[fu].factor*cat.units[tu].factor).toFixed(4)+' '+toCode+' · '+ratesTime
-:'1 '+fromCode+' = '+(1/cat.units[fu].factor*cat.units[tu].factor).toFixed(4)+' '+toCode+' · '+ratesTime;
+?'1 '+fromCode+' = '+rate.toFixed(4)+' '+toCode+' · '+ratesTime
+:'1 '+fromCode+' = '+rate.toFixed(4)+' '+toCode+' · '+ratesTime;
 }
 
 const r=document.getElementById('result');
