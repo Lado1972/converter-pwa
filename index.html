@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#4a90d9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Конвертер">
+<title>Конвертер / Converter</title>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi0JrQvtC90LLRgNC+0YIiLCJzaG9ydF9uYW1lIjoi0JrQvtC90LLRgNC+0YIiLCJkZXNjcmlwdGlvbiI6IlVuaXZlcnNhbCBVbml0IENvbnZlcnRlciIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZjBmMmY1IiwidGhlbWVfY29sb3IiOiIjNGE5MGQ5IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCw8c3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDEwMCAxMDAnPjxyZWN0IHdpZHRoPScxMDAnIGhlaWdodD0nMTAwJyByeD0nMjAnIGZpbGw9JyM0YTkwZDknLz48dGV4dCB4PSc1MCcgeT0nNjInIGZvbnQtc2l6ZT0nNTAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZpbGw9J3doaXRlJz7il4c8L3RleHQ+PC9zdmc+Iiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwifV19">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#f0f2f5;--bg2:#fff;--bg3:#fff;--grid:rgba(45,140,240,.05);--glow:rgba(45,140,240,.06);
+--t1:#333;--t2:#666;--t3:#999;--brd:#dde2e8;--bra:rgba(45,140,240,.3);
+--sh:0 2px 10px rgba(0,0,0,.08),0 8px 30px rgba(0,0,0,.06);
+--inp:#fff;--ac:#4a90d9;--acl:rgba(74,144,217,.15);--acg:rgba(74,144,217,.25);
+--res:#f0f4f8;--btn:#f0f2f5;--btnt:#555;--qb:rgba(74,144,217,.05);--qbr:rgba(74,144,217,.15)
+}
+[data-theme="dark"]{
+--bg:#1a1a2e;--bg2:#16213e;--bg3:#16213e;--grid:rgba(45,140,240,.04);--glow:rgba(45,140,240,.1);
+--t1:#e0e0e0;--t2:#a0a0a0;--t3:#555;--brd:#2a3a5c;--bra:rgba(79,195,247,.3);
+--sh:0 0 60px rgba(45,140,240,.1),0 20px 60px rgba(0,0,0,.7);
+--inp:#1a1a2e;--ac:#4fc3f7;--acl:rgba(79,195,247,.15);--acg:rgba(79,195,247,.25);
+--res:rgba(79,195,247,.05);--btn:#1a1a2e;--btnt:#ccc;--qb:rgba(79,195,247,.05);--qbr:rgba(79,195,247,.15)
+}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);min-height:100vh;min-height:100dvh;display:flex;justify-content:center;align-items:flex-start;padding:10px;color:var(--t1);font-size:17px;transition:background .4s,color .4s}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,var(--glow) 0%,transparent 70%);pointer-events:none;z-index:0}
+.container{background:var(--bg3);border:1px solid var(--bra);border-radius:16px;padding:16px 18px;box-shadow:var(--sh);width:100%;max-width:440px;position:relative;z-index:1;transition:background .4s,border-color .4s,box-shadow .4s}
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+h1{font-size:24px;font-weight:300;color:var(--ac);text-shadow:0 0 20px var(--acg);letter-spacing:2px;margin:0}
+.subtitle{font-size:12px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.lang-btn,.theme-toggle{border:1px solid var(--bra);border-radius:8px;padding:5px 10px;font-size:14px;font-weight:700;cursor:pointer;background:var(--btn);color:var(--ac);transition:all .3s}
+.lang-btn:hover,.theme-toggle:hover{background:var(--acl);border-color:var(--ac)}
+.categories{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+.cat-btn{padding:6px 10px;font-size:14px;border:1px solid var(--bra);border-radius:6px;cursor:pointer;transition:all .3s;font-weight:600;background:var(--btn);color:var(--btnt)}
+.cat-btn:hover{background:var(--acl);color:var(--ac);border-color:var(--ac)}
+.cat-btn.active{background:var(--acl);color:var(--ac);border-color:var(--ac);box-shadow:0 0 12px var(--acg)}
+.converter{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:14px;transition:background .4s,border-color .4s}
+.input-group{margin-bottom:10px}
+.input-group label{display:block;font-size:13px;color:var(--ac);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.input-row{display:flex;gap:6px}
+.input-row input{flex:1;padding:10px 14px;border:2px solid var(--bra);border-radius:10px;font-size:20px;background:var(--inp);color:var(--t1);outline:none;transition:all .3s;font-weight:500;min-width:0}
+.input-row input:focus{border-color:var(--ac);box-shadow:0 0 10px var(--acg)}
+.input-row input::placeholder{color:var(--t3)}
+select{padding:8px 10px;border:2px solid var(--bra);border-radius:10px;font-size:16px;background:var(--inp);color:var(--t1);outline:none;cursor:pointer;transition:all .3s;font-weight:500;min-width:0;flex:1}
+select:focus{border-color:var(--ac);box-shadow:0 0 10px var(--acg)}
+option{background:var(--inp);color:var(--t1)}
+.swap-btn{display:flex;justify-content:center;margin:6px 0}
+.swap-btn button{padding:6px 20px;font-size:20px;border:2px solid var(--bra);border-radius:10px;cursor:pointer;transition:all .3s;background:var(--btn);color:var(--ac);font-weight:700}
+.swap-btn button:hover{background:var(--acl);border-color:var(--ac)}
+.result{text-align:center;font-size:18px;color:var(--ac);margin-top:12px;padding:12px;background:var(--res);border-radius:10px;border:1px solid var(--qbr);font-weight:600;min-height:50px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;cursor:pointer;transition:background .4s,border-color .4s}
+.result:active{transform:scale(.97)}
+.result .rv{color:var(--t1);font-size:22px}
+.result .rl{font-size:12px;color:var(--t2);font-weight:400}
+.copied-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ac);color:#fff;padding:10px 24px;border-radius:20px;font-size:15px;font-weight:600;opacity:0;transition:opacity .3s;z-index:9999;pointer-events:none}
+.copied-toast.show{opacity:1}
+.rate-info{font-size:11px;color:var(--t2);text-align:center;margin-top:6px;opacity:.7}
+.quick-ref-title{font-size:12px;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px;font-weight:600}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.quick-item{background:var(--qb);border:1px solid var(--qbr);border-radius:6px;padding:6px 8px;text-align:center}
+.quick-item .val{font-size:16px;font-weight:700;color:var(--ac)}
+.quick-item .lbl{font-size:11px;color:var(--t2);margin-top:2px}
+@keyframes resultPop{0%{transform:scale(.8);opacity:0}50%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+.animate-result{animation:resultPop .4s cubic-bezier(.68,-.55,.265,1.55) forwards}
+</style>
+</head>
+<body>
+<div class="copied-toast" id="toast"></div>
+<div class="container">
+<div class="top-row">
+<h1>⬡ <span id="titleText">КОНВЕРТЕР</span></h1>
+<div style="display:flex;gap:5px">
+<button class="lang-btn" onclick="toggleLang()" id="langBtn">EN</button>
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀️</button>
+</div>
+</div>
+<div class="subtitle" id="subtitleText">Быстрый перевод единиц</div>
+<div class="categories" id="categories"></div>
+<div class="converter">
+<div class="input-group">
+<label id="labelFrom">Из</label>
+<div class="input-row">
+<input type="number" id="fromValue" placeholder="0" oninput="convert()">
+<select id="fromUnit" onchange="convert()"></select>
+</div>
+</div>
+<div class="swap-btn">
+<button onclick="swapUnits()">⇅</button>
+</div>
+<div class="input-group">
+<label id="labelTo">В</label>
+<div class="input-row">
+<input type="text" id="toValue" readonly style="opacity:.5;cursor:default">
+<select id="toUnit" onchange="convert()"></select>
+</div>
+</div>
+<div class="result" id="result" onclick="copyResult()">
+<div class="rv" id="resultValue">—</div>
+<div class="rl" id="resultLabel"></div>
+</div>
+<div class="rate-info" id="rateInfo"></div>
+<div class="quick-ref" id="quickRef"></div>
+</div>
+</div>
+
+<script>
+// === PWA Service Worker (inline) ===
+if('serviceWorker' in navigator){
+const swCode=`
+const CACHE='converter-v2';
+self.addEventListener('install',e=>{self.skipWaiting()});
+self.addEventListener('activate',e=>{e.waitUntil(clients.claim())});
+self.addEventListener('fetch',e=>{
+e.respondWith(
+caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+const clone=res.clone();
+caches.open(CACHE).then(c=>c.put(e.request,clone));
+return res;
+}).catch(()=>caches.match(e.request)))
+);
+});`;
+const blob=new Blob([swCode],{type:'application/javascript'});
+navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+
+// === LANGUAGE ===
+let lang=localStorage.getItem('converterLang')||'ru';
+const L={
+ru:{
+title:'КОНВЕРТЕР',subtitle:'Быстрый перевод единиц',from:'Из',to:'В',
+enter:'Введите значение',quick:'Быстрая справка',copied:'Скопировано!',
+cats:{
+length:'📏 Длина',weight:'⚖️ Вес',temperature:'🌡️ Темп.',
+speed:'🏎️ Скорость',area:'📐 Площадь',data:'💾 Данные',
+time:'⏱️ Время',currency:'💱 Валюта',volume:'🧪 Объём',kitchen:'🍳 Кухня'
+}
+},
+en:{
+title:'CONVERTER',subtitle:'Quick unit conversion',from:'From',to:'To',
+enter:'Enter a value',quick:'Quick reference',copied:'Copied!',
+cats:{
+length:'📏 Length',weight:'⚖️ Weight',temperature:'🌡️ Temp.',
+speed:'🏎️ Speed',area:'📐 Area',data:'💾 Data',
+time:'⏱️ Time',currency:'💱 Currency',volume:'🧪 Volume',kitchen:'🍳 Kitchen'
+}
+}
+};
+
+const categories={
+length:{
+units:{
+mm:{name:{ru:'мм',en:'mm'},factor:.001},
+cm:{name:{ru:'см',en:'cm'},factor:.01},
+m:{name:{ru:'м',en:'m'},factor:1},
+km:{name:{ru:'км',en:'km'},factor:1000},
+inch:{name:{ru:'дюйм',en:'in'},factor:.0254},
+foot:{name:{ru:'фут',en:'ft'},factor:.3048},
+yard:{name:{ru:'ярд',en:'yd'},factor:.9144},
+mile:{name:{ru:'миля',en:'mi'},factor:1609.344}
+},
+defaultFrom:'m',defaultTo:'km',
+quickRefs:v=>[
+{v:(v*100).toFixed(1),l:{ru:'см',en:'cm'}},
+{v:(v*1000).toFixed(0),l:{ru:'мм',en:'mm'}},
+{v:(v*3.281).toFixed(2),l:{ru:'футов',en:'ft'}},
+{v:(v*39.37).toFixed(1),l:{ru:'дюймов',en:'in'}}
+]
+},
+weight:{
+units:{
+mg:{name:{ru:'мг',en:'mg'},factor:.000001},
+g:{name:{ru:'г',en:'g'},factor:.001},
+kg:{name:{ru:'кг',en:'kg'},factor:1},
+ton:{name:{ru:'т',en:'t'},factor:1000},
+oz:{name:{ru:'унция',en:'oz'},factor:.0283495},
+lb:{name:{ru:'фунт',en:'lb'},factor:.453592}
+},
+defaultFrom:'kg',defaultTo:'lb',
+quickRefs:v=>[
+{v:(v*1000).toFixed(0),l:{ru:'грамм',en:'g'}},
+{v:(v*1000000).toFixed(0),l:{ru:'мг',en:'mg'}},
+{v:(v*2.205).toFixed(2),l:{ru:'фунтов',en:'lb'}},
+{v:(v*35.274).toFixed(1),l:{ru:'унций',en:'oz'}}
+]
+},
+temperature:{
+units:{
+c:{name:{ru:'°C',en:'°C'},custom:true},
+f:{name:{ru:'°F',en:'°F'},custom:true},
+k:{name:{ru:'K',en:'K'},custom:true}
+},
+defaultFrom:'c',defaultTo:'f',
+quickRefs:(v,u)=>{
+if(u==='c')return[
+{v:((v*9/5)+32).toFixed(1),l:{ru:'°F',en:'°F'}},
+{v:(v+273.15).toFixed(1),l:{ru:'K',en:'K'}},
+{v:(v*1.8).toFixed(1),l:{ru:'°R',en:'°R'}},
+{v:(v+273.15).toFixed(1),l:{ru:'Кельвин',en:'Kelvin'}}
+];
+return[{v:'—',l:{ru:'',en:''}},{v:'—',l:{ru:'',en:''}},{v:'—',l:{ru:'',en:''}},{v:'—',l:{ru:'',en:''}}];
+}
+},
+speed:{
+units:{
+ms:{name:{ru:'м/с',en:'m/s'},factor:1},
+kmh:{name:{ru:'км/ч',en:'km/h'},factor:.277778},
+mph:{name:{ru:'миль/ч',en:'mph'},factor:.44704},
+knot:{name:{ru:'узел',en:'kn'},factor:.514444},
+fts:{name:{ru:'фут/с',en:'ft/s'},factor:.3048}
+},
+defaultFrom:'kmh',defaultTo:'mph',
+quickRefs:v=>[
+{v:(v*3.6).toFixed(1),l:{ru:'км/ч',en:'km/h'}},
+{v:(v*2.237).toFixed(2),l:{ru:'миль/ч',en:'mph'}},
+{v:(v*1.944).toFixed(2),l:{ru:'узлов',en:'kn'}},
+{v:(v*3.281).toFixed(2),l:{ru:'фут/с',en:'ft/s'}}
+]
+},
+area:{
+units:{
+mm2:{name:{ru:'мм²',en:'mm²'},factor:.000001},
+cm2:{name:{ru:'см²',en:'cm²'},factor:.0001},
+m2:{name:{ru:'м²',en:'m²'},factor:1},
+km2:{name:{ru:'км²',en:'km²'},factor:1000000},
+ha:{name:{ru:'га',en:'ha'},factor:10000},
+acre:{name:{ru:'акр',en:'ac'},factor:4046.86},
+ft2:{name:{ru:'фут²',en:'ft²'},factor:.092903}
+},
+defaultFrom:'m2',defaultTo:'ft2',
+quickRefs:v=>[
+{v:(v*10000).toFixed(0),l:{ru:'см²',en:'cm²'}},
+{v:(v/10000).toFixed(4),l:{ru:'га',en:'ha'}},
+{v:(v*10.764).toFixed(1),l:{ru:'фут²',en:'ft²'}},
+{v:(v/4046.86).toFixed(4),l:{ru:'акров',en:'ac'}}
+]
+},
+data:{
+units:{
+b:{name:{ru:'байт',en:'B'},factor:1},
+kb:{name:{ru:'КБ',en:'KB'},factor:1024},
+mb:{name:{ru:'МБ',en:'MB'},factor:1048576},
+gb:{name:{ru:'ГБ',en:'GB'},factor:1073741824},
+tb:{name:{ru:'ТБ',en:'TB'},factor:1099511627776}
+},
+defaultFrom:'gb',defaultTo:'mb',
+quickRefs:v=>[
+{v:(v/1048576).toFixed(2),l:{ru:'МБ',en:'MB'}},
+{v:(v/1073741824).toFixed(4),l:{ru:'ГБ',en:'GB'}},
+{v:(v/1099511627776).toFixed(6),l:{ru:'ТБ',en:'TB'}},
+{v:(v*8).toFixed(0),l:{ru:'бит',en:'bits'}}
+]
+},
+time:{
+units:{
+ms:{name:{ru:'мс',en:'ms'},factor:.001},
+sec:{name:{ru:'сек',en:'sec'},factor:1},
+min:{name:{ru:'мин',en:'min'},factor:60},
+hour:{name:{ru:'час',en:'hr'},factor:3600},
+day:{name:{ru:'день',en:'day'},factor:86400},
+week:{name:{ru:'неделя',en:'wk'},factor:604800},
+month:{name:{ru:'мес',en:'mo'},factor:2592000},
+year:{name:{ru:'год',en:'yr'},factor:31536000}
+},
+defaultFrom:'hour',defaultTo:'min',
+quickRefs:v=>[
+{v:(v/60).toFixed(2),l:{ru:'минут',en:'min'}},
+{v:(v/3600).toFixed(3),l:{ru:'часов',en:'hr'}},
+{v:(v/86400).toFixed(4),l:{ru:'дней',en:'days'}},
+{v:(v/604800).toFixed(5),l:{ru:'недель',en:'weeks'}}
+]
+},
+currency:{
+units:{
+usd:{name:{ru:'USD',en:'USD'},factor:1},
+eur:{name:{ru:'EUR',en:'EUR'},factor:1},
+gbp:{name:{ru:'GBP',en:'GBP'},factor:1},
+rub:{name:{ru:'RUB',en:'RUB'},factor:1},
+gel:{name:{ru:'GEL',en:'GEL'},factor:1},
+try_:{name:{ru:'TRY',en:'TRY'},factor:1},
+cny:{name:{ru:'CNY',en:'CNY'},factor:1},
+jpy:{name:{ru:'JPY',en:'JPY'},factor:1}
+},
+defaultFrom:'usd',defaultTo:'gel',
+quickRefs:null
+},
+volume:{
+units:{
+ml:{name:{ru:'мл',en:'ml'},factor:.001},
+l:{name:{ru:'литр',en:'liter'},factor:1},
+cup:{name:{ru:'стакан',en:'cup'},factor:.236588},
+floz:{name:{ru:'жидк.унция',en:'fl oz'},factor:.0295735},
+pt:{name:{ru:'пинта',en:'pint'},factor:.473176},
+qt:{name:{ru:'кварта',en:'quart'},factor:.946353},
+gal:{name:{ru:'галлон',en:'gallon'},factor:3.78541},
+tbsp:{name:{ru:'ст.ложка',en:'tbsp'},factor:.0147868},
+tsp:{name:{ru:'ч.ложка',en:'tsp'},factor:.00492892},
+cm3:{name:{ru:'см³',en:'cm³'},factor:.001},
+m3:{name:{ru:'м³',en:'m³'},factor:1000}
+},
+defaultFrom:'l',defaultTo:'cup',
+quickRefs:v=>[
+{v:(v*1000).toFixed(0),l:{ru:'мл',en:'ml'}},
+{v:(v/.236588).toFixed(1),l:{ru:'стаканов',en:'cups'}},
+{v:(v*33.814).toFixed(1),l:{ru:'жидк.унций',en:'fl oz'}},
+{v:(v/.0147868).toFixed(0),l:{ru:'ст.ложек',en:'tbsp'}}
+]
+},
+kitchen:{
+units:{
+// Liquids
+cup_water:{name:{ru:'стакан воды',en:'cup water'},factor:240,group:'liquid'},
+ml_water:{name:{ru:'мл воды',en:'ml water'},factor:1,group:'liquid'},
+tbsp_oil:{name:{ru:'ст.л. масла',en:'tbsp oil'},factor:14,group:'liquid'},
+// Flour
+cup_flour:{name:{ru:'стакан муки',en:'cup flour'},factor:130,group:'dry'},
+tbsp_flour:{name:{ru:'ст.л. муки',en:'tbsp flour'},factor:8,group:'dry'},
+g_flour:{name:{ru:'г муки',en:'g flour'},factor:1,group:'dry'},
+// Sugar
+cup_sugar:{name:{ru:'стакан сахара',en:'cup sugar'},factor:200,group:'dry'},
+tbsp_sugar:{name:{ru:'ст.л. сахара',en:'tbsp sugar'},factor:12.5,group:'dry'},
+g_sugar:{name:{ru:'г сахара',en:'g sugar'},factor:1,group:'dry'},
+// Salt
+tsp_salt:{name:{ru:'ч.л. соли',en:'tsp salt'},factor:6,group:'dry'},
+g_salt:{name:{ru:'г соли',en:'g salt'},factor:1,group:'dry'},
+// Butter
+tbsp_butter:{name:{ru:'ст.л. масла',en:'tbsp butter'},factor:15,group:'fat'},
+g_butter:{name:{ru:'г масла',en:'g butter'},factor:1,group:'fat'},
+// Rice
+cup_rice:{name:{ru:'стакан риса',en:'cup rice'},factor:185,group:'dry'},
+g_rice:{name:{ru:'г риса',en:'g rice'},factor:1,group:'dry'}
+},
+defaultFrom:'cup_flour',defaultTo:'g_flour',
+quickRefs:null
+}
+};
+
+let currentCategory='length';
+let ratesLoaded=false;
+let ratesTime=null;
+
+// === LANGUAGE & UI ===
+function updateLang(){
+const t=L[lang];
+document.getElementById('titleText').textContent=t.title;
+document.getElementById('subtitleText').textContent=t.subtitle;
+document.getElementById('labelFrom').textContent=t.from;
+document.getElementById('labelTo').textContent=t.to;
+document.getElementById('langBtn').textContent=lang==='ru'?'EN':'РУ';
+document.documentElement.lang=lang;
+localStorage.setItem('converterLang',lang);
+initCategories();
+populateUnits();
+convert();
+}
+function toggleLang(){lang=lang==='ru'?'en':'ru';updateLang()}
+
+function initCategories(){
+const c=document.getElementById('categories');
+const t=L[lang];
+c.innerHTML='';
+for(const key of Object.keys(categories)){
+const btn=document.createElement('button');
+btn.className='cat-btn'+(key===currentCategory?' active':'');
+btn.textContent=t.cats[key];
+btn.onclick=e=>selectCategory(key,e.target);
+c.appendChild(btn);
+}
+}
+
+function selectCategory(key,el){
+currentCategory=key;
+document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+if(el)el.classList.add('active');
+populateUnits();
+convert();
+}
+
+function populateUnits(){
+const cat=categories[currentCategory];
+const fs=document.getElementById('fromUnit');
+const ts=document.getElementById('toUnit');
+fs.innerHTML='';ts.innerHTML='';
+for(const[key,unit]of Object.entries(cat.units)){
+const o1=document.createElement('option');o1.value=key;o1.textContent=unit.name[lang];fs.appendChild(o1);
+const o2=document.createElement('option');o2.value=key;o2.textContent=unit.name[lang];ts.appendChild(o2);
+}
+fs.value=cat.defaultFrom;ts.value=cat.defaultTo;
+}
+
+function convertTemperature(v,f,t){
+let c;if(f==='c')c=v;else if(f==='f')c=(v-32)*5/9;else if(f==='k')c=v-273.15;
+if(t==='c')return c;if(t==='f')return c*9/5+32;if(t==='k')return c+273.15;
+}
+
+function convert(){
+const cat=categories[currentCategory];
+const fv=parseFloat(document.getElementById('fromValue').value);
+const fu=document.getElementById('fromUnit').value;
+const tu=document.getElementById('toUnit').value;
+const t=L[lang];
+const ri=document.getElementById('rateInfo');
+ri.textContent='';
+
+if(isNaN(fv)){
+document.getElementById('toValue').value='';
+document.getElementById('resultValue').textContent='—';
+document.getElementById('resultLabel').textContent=t.enter;
+document.getElementById('quickRef').innerHTML='';
+return;
+}
+
+let result;
+if(cat.units[fu].custom){
+result=convertTemperature(fv,fu,tu);
+}else{
+result=fv*cat.units[fu].factor/cat.units[tu].factor;
+}
+
+const fmt=Math.abs(result)>=1000?result.toFixed(2):Math.abs(result)>=1?result.toFixed(4):result.toFixed(6);
+document.getElementById('toValue').value=fmt;
+
+const fn=cat.units[fu].name[lang];
+const tn=cat.units[tu].name[lang];
+document.getElementById('resultValue').textContent=fmt+' '+tn;
+document.getElementById('resultLabel').textContent=fv+' '+fn+' = '+fmt+' '+tn;
+
+// Currency rate info
+if(currentCategory==='currency'&&ratesLoaded){
+const fromCode=fu.replace('try_','TRY').toUpperCase();
+const toCode=tu.replace('try_','TRY').toUpperCase();
+ri.textContent=lang==='ru'
+?'1 '+fromCode+' = '+(1/cat.units[fu].factor*cat.units[tu].factor).toFixed(4)+' '+toCode+' · '+ratesTime
+:'1 '+fromCode+' = '+(1/cat.units[fu].factor*cat.units[tu].factor).toFixed(4)+' '+toCode+' · '+ratesTime;
+}
+
+const r=document.getElementById('result');
+r.classList.remove('animate-result');void r.offsetWidth;r.classList.add('animate-result');
+
+updateQuickRefs(fv,fu);
+}
+
+function updateQuickRefs(value,fu){
+const cat=categories[currentCategory];
+const c=document.getElementById('quickRef');
+const t=L[lang];
+if(!cat.quickRefs){c.innerHTML='';return;}
+
+let refs;
+if(cat.units[fu].custom)refs=cat.quickRefs(value,fu);
+else refs=cat.quickRefs(value*cat.units[fu].factor);
+
+let h='<div class="quick-ref-title">'+t.quick+'</div><div class="quick-grid">';
+refs.forEach(r=>{h+='<div class="quick-item"><div class="val">'+r.v+'</div><div class="lbl">'+r.l[lang]+'</div></div>';});
+h+='</div>';c.innerHTML=h;
+}
+
+function swapUnits(){
+const f=document.getElementById('fromUnit'),t=document.getElementById('toUnit');
+const tmp=f.value;f.value=t.value;t.value=tmp;convert();
+}
+
+function copyResult(){
+const rv=document.getElementById('resultValue').textContent;
+if(rv==='—')return;
+navigator.clipboard.writeText(rv).then(()=>{
+const toast=document.getElementById('toast');
+toast.textContent=L[lang].copied;
+toast.classList.add('show');
+setTimeout(()=>toast.classList.remove('show'),1200);
+}).catch(()=>{});
+}
+
+// === REAL EXCHANGE RATES ===
+async function fetchRates(){
+try{
+const res=await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+const data=await res.json();
+if(data.rates){
+const u=categories.currency.units;
+const m={usd:'USD',eur:'EUR',gbp:'GBP',rub:'RUB',gel:'GEL',try_:'TRY',cny:'CNY',jpy:'JPY'};
+for(const[k,code]of Object.entries(m)){
+if(data.rates[code])u[k].factor=data.rates[code];
+}
+ratesLoaded=true;
+const d=new Date();
+ratesTime=d.toLocaleTimeString(lang==='ru'?'ru-RU':'en-US',{hour:'2-digit',minute:'2-digit'});
+if(currentCategory==='currency')convert();
+}
+}catch(e){
+// Fallback from openmind
+try{
+const res2=await fetch('https://open.er-api.com/v6/latest/USD');
+const data2=await res2.json();
+if(data2.rates){
+const u=categories.currency.units;
+const m={usd:'USD',eur:'EUR',gbp:'GBP',rub:'RUB',gel:'GEL',try_:'TRY',cny:'CNY',jpy:'JPY'};
+for(const[k,code]of Object.entries(m)){
+if(data2.rates[code])u[k].factor=data2.rates[code];
+}
+ratesLoaded=true;
+const d=new Date();
+ratesTime=d.toLocaleTimeString(lang==='ru'?'ru-RU':'en-US',{hour:'2-digit',minute:'2-digit'});
+if(currentCategory==='currency')convert();
+}
+}catch(e2){
+console.log('Rates unavailable, using fallback');
+const u=categories.currency.units;
+u.usd.factor=1;u.eur.factor=.93;u.gbp.factor=.79;
+u.rub.factor=91.5;u.gel.factor=2.7;u.try_.factor=32;
+u.cny.factor=7.2;u.jpy.factor=155;
+ratesLoaded=false;
+}
+}
+}
+
+fetchRates();
+setInterval(fetchRates,15*60*1000);
+
+// === THEME ===
+function initTheme(){
+const s=localStorage.getItem('theme')||'light';
+document.documentElement.setAttribute('data-theme',s);
+updateThemeBtn();
+}
+function toggleTheme(){
+const c=document.documentElement.getAttribute('data-theme');
+const n=c==='dark'?'light':'dark';
+document.documentElement.setAttribute('data-theme',n);
+localStorage.setItem('theme',n);
+updateThemeBtn();
+}
+function updateThemeBtn(){
+document.getElementById('themeBtn').textContent=document.documentElement.getAttribute('data-theme')==='dark'?'🌙':'☀️';
+}
+
+// === INIT ===
+initTheme();
+updateLang();
+</script>
+</body>
+</html>
